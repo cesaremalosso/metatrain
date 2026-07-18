@@ -429,7 +429,9 @@ class Trainer(TrainerInterface):
                 # not per-property. This transformation only applies to targets with
                 # per-property scales (i.e. multiple blocks or multiple properties), and
                 # leaves the others unchanged.
-                predictions = (model.module if is_distributed else model).scaler(
+                predictions = (
+                    model.module if is_distributed else model
+                ).scaler.apply_scales(
                     systems,
                     predictions,
                     remove=False,
@@ -467,14 +469,16 @@ class Trainer(TrainerInterface):
                 if epoch == start_epoch or epoch % self.hypers["log_interval"] == 0:
                     scaled_predictions = (
                         model.module if is_distributed else model
-                    ).scaler(
+                    ).scaler.apply_scales(
                         systems,
                         predictions,
                         remove=False,
                         use_per_target_scales=True,
                         use_per_property_scales=False,
                     )
-                    scaled_targets = (model.module if is_distributed else model).scaler(
+                    scaled_targets = (
+                        model.module if is_distributed else model
+                    ).scaler.apply_scales(
                         systems,
                         targets,
                         remove=False,
@@ -530,7 +534,9 @@ class Trainer(TrainerInterface):
                 # per-target, and not per-property. This transformation only applies
                 # to targets with per-property scales (i.e. multiple blocks or
                 # multiple properties), and leaves the others unchanged.
-                predictions = (model.module if is_distributed else model).scaler(
+                predictions = (
+                    model.module if is_distributed else model
+                ).scaler.apply_scales(
                     systems,
                     predictions,
                     remove=False,
@@ -548,14 +554,18 @@ class Trainer(TrainerInterface):
                 # Reapply scales and accumulate quantities for computing val metrics.
                 # This is done for every epoch as validation metrics are needed for
                 # model selection
-                scaled_predictions = (model.module if is_distributed else model).scaler(
+                scaled_predictions = (
+                    model.module if is_distributed else model
+                ).scaler.apply_scales(
                     systems,
                     predictions,
                     remove=False,
                     use_per_target_scales=True,
                     use_per_property_scales=False,
                 )
-                scaled_targets = (model.module if is_distributed else model).scaler(
+                scaled_targets = (
+                    model.module if is_distributed else model
+                ).scaler.apply_scales(
                     systems,
                     targets,
                     remove=False,
